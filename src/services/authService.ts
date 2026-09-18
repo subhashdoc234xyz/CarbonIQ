@@ -24,11 +24,9 @@ export const toUserProfile = (user: { id: string; email?: string; user_metadata?
 
 export async function signInWithGoogle() {
   if (!supabase) throw new Error('Google sign-in is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY, then enable Google in Supabase Authentication.');
-  // Never send a hosted user back to localhost. Local development returns to
-  // the local origin; every deployed build returns to the public Render app.
-  const redirectTo = window.location.hostname === 'localhost'
-    ? window.location.origin
-    : 'https://carboniq-rzvz.onrender.com';
+  // CarbonIQ uses the hosted workspace for every OAuth return, including a
+  // sign-in initiated from a local development tab.
+  const redirectTo = 'https://carboniq-rzvz.onrender.com';
   const { error } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo } });
   if (error) throw error;
 }
