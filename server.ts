@@ -144,7 +144,7 @@ Observed emissions: ${totalKg} kgCO2e across ${observedDays} days; daily run-rat
 Optimized portfolio: ₹${totalCost}, ${annualSavingsTons} tCO2e/year, projects: ${JSON.stringify(selectedActions)}.
 1-day/1-week/1-month scenarios: ${JSON.stringify(scenarios)}.
 Evidence-informed recommendations: ${JSON.stringify(suggestions)}.
-Give: baseline and projected reduction, lowest-cost implementation order, and one audit data-quality action. Keep it under 180 words and make clear this is a forecast.`;
+Give: baseline and projected reduction, lowest-cost implementation order, and one audit data-quality action. Keep it under 180 words and make clear this is a forecast. Return plain text only: do not use Markdown, asterisks, hash headings, or backticks.`;
       const completion = await client.chat.completions.create({
         model: GROQ_MODEL,
         messages: [{ role: "system", content: "You are a practical industrial decarbonization analyst. Be precise and transparent about uncertainty." }, { role: "user", content: prompt }],

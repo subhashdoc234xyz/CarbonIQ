@@ -12,7 +12,7 @@ const fmt = (value: number, digits = 2) => value.toLocaleString('en-IN', { maxim
 export const ReportsView: React.FC<ReportsViewProps> = ({ logs, actions, budget, user }) => {
   const [summary, setSummary] = useState(''); const [isGenerating, setIsGenerating] = useState(false);
   const report = useMemo(() => buildReport(logs, actions, budget), [logs, actions, budget]);
-  const createSummary = async () => { setIsGenerating(true); const response = await fetchGroqReportSummary({ facility: user?.facility || 'Your facility', ...report }); setSummary(response.success ? response.summary : `AI summary unavailable: ${response.error || 'Add GROQ_API_KEY and try again.'}`); setIsGenerating(false); };
+  const createSummary = async () => { setIsGenerating(true); const response = await fetchGroqReportSummary({ facility: user?.facility || 'Your facility', ...report }); setSummary(response.success ? cleanSummaryText(response.summary) : `AI summary unavailable: ${response.error || 'Add GROQ_API_KEY and try again.'}`); setIsGenerating(false); };
   return <div className="w-full max-w-5xl mx-auto space-y-6 pb-12 animate-fade-in"><Header />
     {!logs.length && <section className="rounded-2xl border border-[#FBBF24]/30 bg-[#FBBF24]/5 p-4 flex gap-3"><FileText className="w-5 h-5 shrink-0 text-[#FBBF24] mt-0.5" /><div><h2 className="font-semibold text-sm">Waiting for verified activity data</h2><p className="mt-1 text-sm text-[#C5CDD6]">The report structure and optimizer comparison are ready. Add activity records to calculate your facility's actual baseline and CO₂e rate.</p></div></section>}
     <section className="grid grid-cols-1 sm:grid-cols-3 gap-3"><Metric label="Observed emissions" value={`${fmt(report.totalKg / 1000)} tCO₂e`} detail={`${logs.length} activity record${logs.length === 1 ? '' : 's'}`} icon={<BarChart3 className="w-5 h-5" />} /><Metric label="Daily run-rate" value={`${fmt(report.dailyKg / 1000)} tCO₂e/day`} detail="Derived from log dates" icon={<CalendarClock className="w-5 h-5" />} /><Metric label="Optimized annual reduction" value={`${fmt(report.annualSavingsTons)} tCO₂e`} detail={report.selectedActions.length ? `${report.selectedActions.length} selected project${report.selectedActions.length === 1 ? '' : 's'}` : 'Set a budget to select projects'} icon={<TrendingDown className="w-5 h-5" />} /></section>
@@ -24,6 +24,14 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ logs, actions, budget,
   </div>;
 };
 type Scenario = { label: string; beforeKg: number; afterKg: number; avoidedKg: number; reductionPercent: number; };
+// The API requests plain text, but clean residual Markdown defensively so the
+// report never exposes formatting tokens such as ** to users.
+const cleanSummaryText = (value: string) => value
+  .replace(/\*\*(.*?)\*\*/g, '$1')
+  .replace(/__(.*?)__/g, '$1')
+  .replace(/^#{1,6}\s*/gm, '')
+  .replace(/^\*\s+/gm, '• ')
+  .replace(/`([^`]+)`/g, '$1');
 const EmissionComparisonChart = ({ scenarios }: { scenarios: Scenario[] }) => {
   const maximum = Math.max(1, ...scenarios.flatMap((item) => [item.beforeKg, item.afterKg]));
   return <div className="mt-6"><div className="flex items-center gap-4 text-xs text-[#9CA3AF]"><span className="flex items-center gap-1.5"><i className="w-2.5 h-2.5 rounded-sm bg-[#94A3B8]" />Before</span><span className="flex items-center gap-1.5"><i className="w-2.5 h-2.5 rounded-sm bg-[#34D399]" />After</span></div><svg viewBox="0 0 720 260" className="w-full h-auto mt-3" role="img" aria-label="Grouped bar chart showing CO2 emissions before and after planned projects for daily, weekly, monthly and annual periods"><line x1="52" x2="700" y1="210" y2="210" stroke="#374151" />{[50, 100, 150, 200].map((y) => <line key={y} x1="52" x2="700" y1={y} y2={y} stroke="#26292F" />)}{scenarios.map((item, index) => { const x = 95 + index * 158; const beforeHeight = item.beforeKg / maximum * 160; const afterHeight = item.afterKg / maximum * 160; return <g key={item.label}><rect x={x} y={210 - beforeHeight} width="42" height={beforeHeight} rx="4" fill="#94A3B8" /><rect x={x + 48} y={210 - afterHeight} width="42" height={afterHeight} rx="4" fill="#34D399" /><text x={x + 45} y="235" fill="#9CA3AF" fontSize="12" textAnchor="middle">{item.label}</text><text x={x + 45} y={Math.max(20, 202 - Math.max(beforeHeight, afterHeight))} fill="#D1D5DB" fontSize="10" textAnchor="middle">{fmt(item.beforeKg / 1000)} t</text></g>; })}</svg></div>;
