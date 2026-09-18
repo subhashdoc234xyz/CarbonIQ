@@ -12,3 +12,10 @@ services:
         value: production
       - key: GROQ_API_KEY
         sync: false
+      # Vite exposes only variables prefixed with VITE_ to the browser build.
+      # Enter the Supabase Project URL and anon/public key in Render's dashboard.
+      # Do not use the service-role key here: it must remain server-only.
+      - key: VITE_SUPABASE_URL
+        sync: false
+      - key: VITE_SUPABASE_ANON_KEY
+        sync: false
