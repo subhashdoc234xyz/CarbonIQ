@@ -17,7 +17,7 @@ export async function checkGroqStatus(): Promise<GroqStatus> {
   } catch {
     return {
       configured: false,
-      model: 'llama3-70b-8192',
+      model: 'openai/gpt-oss-20b',
       provider: 'Groq Cloud',
     };
   }

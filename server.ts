@@ -8,6 +8,16 @@ import Groq from "groq-sdk";
 dotenv.config();
 
 const PORT = Number(process.env.PORT) || 3000;
+// A current production Groq model. Override per environment without code changes.
+const GROQ_MODEL = process.env.GROQ_MODEL || "openai/gpt-oss-20b";
+
+function groqErrorMessage(err: any): string {
+  const message = err?.message || "Failed to call Groq API";
+  if (/decommissioned|model_decommissioned|model.*no longer supported/i.test(message)) {
+    return `The configured Groq model (${GROQ_MODEL}) is unavailable. Set GROQ_MODEL to an active Groq model and try again.`;
+  }
+  return message;
+}
 
 // Lazy initialization for Groq client using GROQ_API_KEY only
 let groqInstance: Groq | null = null;
@@ -42,7 +52,7 @@ async function startServer() {
   app.get("/api/groq/status", (req, res) => {
     res.json({
       configured: !!process.env.GROQ_API_KEY,
-      model: "llama3-70b-8192",
+      model: GROQ_MODEL,
       provider: "Groq Cloud",
     });
   });
@@ -66,7 +76,7 @@ Provide a concise, 3-bullet executive briefing:
 3. Recommendation for un-funded actions in the next fiscal budget`;
 
       const completion = await client.chat.completions.create({
-        model: "llama3-70b-8192",
+        model: GROQ_MODEL,
         messages: [
           { role: "system", content: "You are an expert industrial carbon mitigation engineer and LP optimization analyst." },
           { role: "user", content: prompt }
@@ -76,12 +86,12 @@ Provide a concise, 3-bullet executive briefing:
       });
 
       const reply = completion.choices[0]?.message?.content || "No insights generated.";
-      res.json({ success: true, insights: reply, model: "llama3-70b-8192" });
+      res.json({ success: true, insights: reply, model: GROQ_MODEL });
     } catch (err: any) {
       console.error("Groq optimize error:", err?.message);
       res.status(err?.message?.includes("GROQ_API_KEY") ? 401 : 500).json({
         success: false,
-        error: err?.message || "Failed to call Groq API",
+        error: groqErrorMessage(err),
       });
     }
   });
@@ -104,7 +114,7 @@ Standard: GHG Protocol Corporate Standard & BRSR Core (SEBI India)
 Provide a 2-paragraph formal auditor statement assessing verification readiness, hotspot attribution, and regulatory alignment.`;
 
       const completion = await client.chat.completions.create({
-        model: "llama3-70b-8192",
+        model: GROQ_MODEL,
         messages: [
           { role: "system", content: "You are an ISO 14064 certified GHG inventory auditor." },
           { role: "user", content: prompt }
@@ -114,12 +124,12 @@ Provide a 2-paragraph formal auditor statement assessing verification readiness,
       });
 
       const statement = completion.choices[0]?.message?.content || "Audit statement generated.";
-      res.json({ success: true, statement, model: "llama3-70b-8192" });
+      res.json({ success: true, statement, model: GROQ_MODEL });
     } catch (err: any) {
       console.error("Groq audit error:", err?.message);
       res.status(err?.message?.includes("GROQ_API_KEY") ? 401 : 500).json({
         success: false,
-        error: err?.message || "Failed to call Groq API",
+        error: groqErrorMessage(err),
       });
     }
   });
@@ -136,14 +146,19 @@ Optimized portfolio: ₹${totalCost}, ${annualSavingsTons} tCO2e/year, projects:
 Evidence-informed recommendations: ${JSON.stringify(suggestions)}.
 Give: baseline and projected reduction, lowest-cost implementation order, and one audit data-quality action. Keep it under 180 words and make clear this is a forecast.`;
       const completion = await client.chat.completions.create({
-        model: "llama3-70b-8192",
+        model: GROQ_MODEL,
         messages: [{ role: "system", content: "You are a practical industrial decarbonization analyst. Be precise and transparent about uncertainty." }, { role: "user", content: prompt }],
-        temperature: 0.2, max_tokens: 450,
+        // GPT-OSS uses reasoning tokens. Keep reasoning low and reserve enough
+        // completion tokens for the customer-facing summary itself.
+        reasoning_effort: "low",
+        include_reasoning: false,
+        temperature: 0.2,
+        max_completion_tokens: 900,
       });
       res.json({ success: true, summary: completion.choices[0]?.message?.content || "No summary generated." });
     } catch (err: any) {
       console.error("Groq report summary error:", err?.message);
-      res.status(err?.message?.includes("GROQ_API_KEY") ? 401 : 500).json({ success: false, error: err?.message || "Failed to call Groq API" });
+      res.status(err?.message?.includes("GROQ_API_KEY") ? 401 : 500).json({ success: false, error: groqErrorMessage(err) });
     }
   });
 
