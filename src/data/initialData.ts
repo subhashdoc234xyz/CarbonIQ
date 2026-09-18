@@ -9,6 +9,15 @@ export const DEFAULT_USER: UserProfile = {
   role: 'Sustainability & Operations Director',
 };
 
+export const GUEST_USER: UserProfile = {
+  id: 'guest_session',
+  fullName: 'Guest User',
+  email: 'guest@carboniq.local',
+  avatarUrl: '',
+  facility: 'CarbonIQ Demo Facility',
+  role: 'Guest Explorer',
+};
+
 export const EMISSION_FACTORS: EmissionFactor[] = [
   {
     id: 'ef_elec_cea',

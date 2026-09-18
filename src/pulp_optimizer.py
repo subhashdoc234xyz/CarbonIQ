@@ -50,10 +50,10 @@ def solve_budget_allocation(budget=400000):
     total_co2 = sum(a["co2_saved_tons_per_year"] for a in selected)
 
     print(f"Optimization Finished. Status: {prob.status}")
-    print(f"Selected {len(selected)} actions within budget ₹{budget:,}:")
+    print(f"Selected {len(selected)} actions within budget INR {budget:,}:")
     for a in selected:
-        print(f" - {a.get('action_name', a.get('id'))}: Cost ₹{a['cost']:,} | Saved {a['co2_saved_tons_per_year']} tCO2/yr")
-    print(f"Total CapEx: ₹{total_cost:,} | Total Abatement: {total_co2:.2f} tCO2/yr")
+        print(f" - {a.get('action_name', a.get('id'))}: Cost INR {a['cost']:,} | Saved {a['co2_saved_tons_per_year']} tCO2/yr")
+    print(f"Total CapEx: INR {total_cost:,} | Total Abatement: {total_co2:.2f} tCO2/yr")
 
     return selected
 

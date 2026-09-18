@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { ShieldCheck, Lock, Activity, ArrowLeft } from 'lucide-react';
+import { ShieldCheck, Lock, Activity, ArrowLeft, UserRound } from 'lucide-react';
 import { CarbonIQLogo } from './CarbonIQLogo';
 import { UserProfile } from '../types';
-import { DEFAULT_USER } from '../data/initialData';
+import { DEFAULT_USER, GUEST_USER } from '../data/initialData';
 
 interface SignInModalProps {
   onSuccess: (user: UserProfile) => void;
@@ -23,6 +23,15 @@ export const SignInModal: React.FC<SignInModalProps> = ({ onSuccess, onBack }) =
         onSuccess(DEFAULT_USER);
       }, 700);
     }, 600);
+  };
+
+  const handleGuestAccess = () => {
+    setIsLoading(true);
+    setStatusMessage('Opening the CarbonIQ demo workspace...');
+
+    setTimeout(() => {
+      onSuccess(GUEST_USER);
+    }, 400);
   };
 
   return (
@@ -90,6 +99,24 @@ export const SignInModal: React.FC<SignInModalProps> = ({ onSuccess, onBack }) =
             </svg>
             <span>{isLoading ? 'Connecting...' : 'Continue with Google'}</span>
           </button>
+
+          <div className="w-full flex items-center gap-3 my-4" aria-hidden="true">
+            <div className="h-px flex-1 bg-[#26292F]" />
+            <span className="text-[10px] font-mono uppercase tracking-wider text-[#6B7280]">or</span>
+            <div className="h-px flex-1 bg-[#26292F]" />
+          </div>
+
+          <button
+            onClick={handleGuestAccess}
+            disabled={isLoading}
+            className="w-full bg-[#1F2228] hover:bg-[#26292F] border border-[#3A3E46] hover:border-[#34D399]/50 text-[#F5F6F7] font-semibold text-sm py-3 px-4 rounded-xl flex items-center justify-center gap-3 transition-all cursor-pointer disabled:opacity-80 disabled:cursor-not-allowed select-none"
+          >
+            <UserRound className="w-5 h-5 text-[#34D399]" />
+            <span>Continue as Guest</span>
+          </button>
+          <p className="text-[11px] text-[#9CA3AF] text-center mt-2">
+            Explore the demo workspace without creating an account.
+          </p>
 
           {/* Status micro-interaction banner */}
           {statusMessage && (
