@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { ActivityLogEntry } from '../types';
 import { Calculator, PlusCircle, Trash2 } from 'lucide-react';
 import { DEFAULT_EMISSION_FACTORS } from '../data/defaultEmissionFactors';
@@ -16,6 +16,12 @@ export const ActivityLogView: React.FC<ActivityLogViewProps> = ({ logs, onAddLog
   const [saved, setSaved] = useState(false);
   const selected = useMemo(() => DEFAULT_EMISSION_FACTORS.find((item) => item.value === activityType), [activityType]);
   const emissions = estimateActivityEmissions(Number(quantity), Number(factor));
+
+  // Reapply the editable default whenever a known activity is chosen. This also
+  // covers selection restored by the browser after a reload.
+  useEffect(() => {
+    setFactor(selected?.defaultFactor === undefined ? '' : String(selected.defaultFactor));
+  }, [selected?.value]);
 
   const submit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -36,11 +42,11 @@ export const ActivityLogView: React.FC<ActivityLogViewProps> = ({ logs, onAddLog
     <div className="pt-2"><h1 className="text-xl sm:text-2xl font-bold text-[#F5F6F7]">Activity data</h1><p className="text-sm text-[#9CA3AF] mt-1">Choose an activity, enter the measured number, and use your verified emission factor.</p></div>
     <form onSubmit={submit} className="rounded-2xl bg-[#16181C] border border-[#26292F] p-5 sm:p-6 space-y-5">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <Field label="Activity type"><select required value={activityType} onChange={(e) => { const next = DEFAULT_EMISSION_FACTORS.find((item) => item.value === e.target.value)!; setActivityType(next.value); setFactor(next.defaultFactor === undefined ? '' : String(next.defaultFactor)); }} className="input"><option value="" disabled>Select an activity</option>{DEFAULT_EMISSION_FACTORS.map((item) => <option key={item.value} value={item.value}>{item.label} ({item.unit})</option>)}</select></Field>
+        <Field label="Activity type"><select required value={activityType} onChange={(e) => setActivityType(e.target.value)} className="input"><option value="" disabled>Select an activity</option>{DEFAULT_EMISSION_FACTORS.map((item) => <option key={item.value} value={item.value}>{item.label} ({item.unit})</option>)}</select></Field>
         <Field label="Reporting date"><input className="input" type="date" value={date} onChange={(e) => setDate(e.target.value)} required /></Field>
         {activityType === 'custom' && <Field label="Custom activity name"><input className="input" value={customName} onChange={(e) => setCustomName(e.target.value)} placeholder="e.g. Refrigerant top-up" required /></Field>}
         <Field label={`Measured quantity (${selected?.unit || 'unit'})`}><input disabled={!selected} className="input" type="number" min="0" step="any" value={quantity} onChange={(e) => setQuantity(e.target.value)} placeholder={selected ? `Enter ${selected.unit}` : 'Select an activity first'} required /></Field>
-        <Field label={`Emission factor (kg CO₂e / ${selected?.unit || 'unit'})`}><input disabled={!selected} className="input" type="number" min="0" step="any" value={factor} onChange={(e) => setFactor(e.target.value)} placeholder="Enter verified factor" required /></Field>
+        <Field label={`Emission factor (kg CO₂e / ${selected?.unit || 'unit'})`}><input disabled={!selected} className="input" type="number" min="0" step="any" value={factor} onChange={(e) => setFactor(e.target.value)} placeholder={selected?.defaultFactor !== undefined ? 'Default factor is loading' : 'Enter verified factor'} required />{selected?.defaultFactor !== undefined && <p className="text-[11px] text-[#34D399]">Default {selected.defaultFactor} applied automatically — editable before saving.</p>}</Field>
       </div>
       <div className="rounded-xl bg-[#0B0D10] border border-[#26292F] p-4 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between"><div><p className="text-xs text-[#9CA3AF]">Calculated emissions</p><p className="text-2xl font-bold font-mono text-[#34D399]">{quantity && factor ? `${emissions.toLocaleString(undefined, { maximumFractionDigits: 3 })} kg CO₂e` : 'Awaiting activity data'}</p></div>{selected?.sourceUrl ? <div className="max-w-sm text-xs text-[#9CA3AF]"><p>Suggested factor: <a className="text-[#34D399] hover:underline" href={selected.sourceUrl} target="_blank" rel="noreferrer">{selected.sourceName}</a></p><p className="mt-1">{selected.note} Verify or edit it before saving.</p></div> : <p className="max-w-sm text-xs text-[#9CA3AF]">Enter a verified factor for this custom activity.</p>}</div>
       <button type="submit" className="w-full sm:w-auto px-5 py-2.5 rounded-lg bg-[#34D399] text-[#003825] text-sm font-semibold"><PlusCircle className="inline w-4 h-4 mr-1.5" />{saved ? 'Activity saved' : 'Add activity record'}</button>
