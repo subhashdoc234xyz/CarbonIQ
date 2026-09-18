@@ -24,9 +24,11 @@ export const toUserProfile = (user: { id: string; email?: string; user_metadata?
 
 export async function signInWithGoogle() {
   if (!supabase) throw new Error('Google sign-in is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY, then enable Google in Supabase Authentication.');
-  // Render uses its public origin; local development retains localhost. This
-  // address must also be added to Supabase's Redirect URLs allowlist.
-  const redirectTo = import.meta.env.VITE_APP_URL || window.location.origin;
+  // Never send a hosted user back to localhost. Local development returns to
+  // the local origin; every deployed build returns to the public Render app.
+  const redirectTo = window.location.hostname === 'localhost'
+    ? window.location.origin
+    : 'https://carboniq-rzvz.onrender.com';
   const { error } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo } });
   if (error) throw error;
 }
