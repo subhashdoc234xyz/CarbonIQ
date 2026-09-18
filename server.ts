@@ -124,6 +124,29 @@ Provide a 2-paragraph formal auditor statement assessing verification readiness,
     }
   });
 
+  // 3. Summarize calculated activity forecasts and portfolio impact for Reports & Audit.
+  app.post("/api/groq/report-summary", async (req, res) => {
+    try {
+      const { facility, totalKg, dailyKg, observedDays, annualSavingsTons, totalCost, selectedActions, scenarios, suggestions } = req.body;
+      const client = getGroq();
+      const prompt = `Create a concise executive carbon report for ${facility}. Use only these calculated workspace facts; do not invent measurements, costs, or compliance claims.
+Observed emissions: ${totalKg} kgCO2e across ${observedDays} days; daily run-rate ${dailyKg} kgCO2e/day.
+Optimized portfolio: ₹${totalCost}, ${annualSavingsTons} tCO2e/year, projects: ${JSON.stringify(selectedActions)}.
+1-day/1-week/1-month scenarios: ${JSON.stringify(scenarios)}.
+Evidence-informed recommendations: ${JSON.stringify(suggestions)}.
+Give: baseline and projected reduction, lowest-cost implementation order, and one audit data-quality action. Keep it under 180 words and make clear this is a forecast.`;
+      const completion = await client.chat.completions.create({
+        model: "llama-3.3-70b-versatile",
+        messages: [{ role: "system", content: "You are a practical industrial decarbonization analyst. Be precise and transparent about uncertainty." }, { role: "user", content: prompt }],
+        temperature: 0.2, max_tokens: 450,
+      });
+      res.json({ success: true, summary: completion.choices[0]?.message?.content || "No summary generated." });
+    } catch (err: any) {
+      console.error("Groq report summary error:", err?.message);
+      res.status(err?.message?.includes("GROQ_API_KEY") ? 401 : 500).json({ success: false, error: err?.message || "Failed to call Groq API" });
+    }
+  });
+
   // Static production serving vs development Vite middleware
   const isProd = process.env.NODE_ENV === "production" || process.env.RENDER === "true";
   const distPath = path.join(process.cwd(), "dist");

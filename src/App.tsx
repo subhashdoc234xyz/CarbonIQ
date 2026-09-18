@@ -23,6 +23,7 @@ export default function App() {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [logs, setLogs] = useState<ActivityLogEntry[]>(INITIAL_LOGS);
   const [actions, setActions] = useState<ReductionAction[]>(REDUCTION_ACTIONS);
+  const [optimizerBudget, setOptimizerBudget] = useState('');
 
   useEffect(() => {
     if (!supabase) return;
@@ -167,10 +168,10 @@ export default function App() {
                 />
               )}
 
-              {currentView === 'budget-optimizer' && <BudgetOptimizerView actions={actions} onActionsChange={setActions} />}
+              {currentView === 'budget-optimizer' && <BudgetOptimizerView actions={actions} onActionsChange={setActions} budget={optimizerBudget} onBudgetChange={setOptimizerBudget} />}
 
               {currentView === 'reports' && (
-                <ReportsView logs={logs} user={user || DEFAULT_USER} />
+                <ReportsView logs={logs} actions={actions} budget={Number(optimizerBudget) || 0} user={user || DEFAULT_USER} />
               )}
             </main>
 

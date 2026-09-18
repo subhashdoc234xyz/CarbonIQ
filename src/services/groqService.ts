@@ -70,3 +70,14 @@ export async function fetchGroqAuditSummary(params: {
     };
   }
 }
+
+export async function fetchGroqReportSummary(params: unknown): Promise<{ success: boolean; summary: string; error?: string }> {
+  try {
+    const res = await fetch('/api/groq/report-summary', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(params),
+    });
+    return await res.json();
+  } catch (err: any) {
+    return { success: false, summary: '', error: err.message || 'Failed to reach Groq endpoint' };
+  }
+}

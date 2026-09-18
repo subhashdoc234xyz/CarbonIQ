@@ -47,6 +47,8 @@ export interface ReductionAction {
   category: string;
   cost: number;
   co2SavedTonsPerYear: number;
+  /** Expected period for which the intervention keeps delivering its annual reduction. */
+  implementationDurationYears: number;
   icon: string;
 }
 
