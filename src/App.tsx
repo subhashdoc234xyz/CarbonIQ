@@ -4,8 +4,8 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { ScreenView, UserProfile, ActivityLogEntry } from './types';
-import { DEFAULT_USER, INITIAL_LOGS } from './data/initialData';
+import { ScreenView, UserProfile, ActivityLogEntry, ReductionAction } from './types';
+import { DEFAULT_USER, INITIAL_LOGS, REDUCTION_ACTIONS } from './data/initialData';
 import { HeaderNav } from './components/HeaderNav';
 import { Sidebar } from './components/Sidebar';
 import { BottomNav } from './components/BottomNav';
@@ -22,6 +22,7 @@ export default function App() {
   const [currentView, setCurrentView] = useState<ScreenView>('landing');
   const [user, setUser] = useState<UserProfile | null>(null);
   const [logs, setLogs] = useState<ActivityLogEntry[]>(INITIAL_LOGS);
+  const [actions, setActions] = useState<ReductionAction[]>(REDUCTION_ACTIONS);
 
   useEffect(() => {
     if (!supabase) return;
@@ -152,6 +153,7 @@ export default function App() {
               {currentView === 'dashboard' && (
                 <DashboardView
                   logs={logs}
+                  actions={actions}
                   onNavigateToLogs={() => setCurrentView('activity-log')}
                   onNavigateToOptimizer={() => setCurrentView('budget-optimizer')}
                 />
@@ -165,7 +167,7 @@ export default function App() {
                 />
               )}
 
-              {currentView === 'budget-optimizer' && <BudgetOptimizerView />}
+              {currentView === 'budget-optimizer' && <BudgetOptimizerView actions={actions} onActionsChange={setActions} />}
 
               {currentView === 'reports' && (
                 <ReportsView logs={logs} user={user || DEFAULT_USER} />

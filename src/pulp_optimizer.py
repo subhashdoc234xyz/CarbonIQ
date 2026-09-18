@@ -5,7 +5,7 @@ Solves the Carbon Budget Allocation 0-1 Knapsack Linear Program.
 import os
 import sys
 
-def solve_budget_allocation(budget=400000):
+def solve_budget_allocation(budget):
     try:
         from pulp import LpProblem, LpMaximize, LpVariable, lpSum
     except ImportError:
@@ -26,15 +26,7 @@ def solve_budget_allocation(budget=400000):
             print(f"Failed to query Supabase: {e}")
 
     if not actions:
-        # Benchmark industrial mitigation actions
-        actions = [
-            {"id": "act_1", "action_name": "Waste Heat Recovery on Reheating Furnace", "cost": 180000, "co2_saved_tons_per_year": 142.5},
-            {"id": "act_2", "action_name": "VFD Drives on Primary Water Pumps", "cost": 65000, "co2_saved_tons_per_year": 48.0},
-            {"id": "act_3", "action_name": "Solar Rooftop PV (120 kWp)", "cost": 320000, "co2_saved_tons_per_year": 215.0},
-            {"id": "act_4", "action_name": "Facility High-Bay LED Retrofit", "cost": 25000, "co2_saved_tons_per_year": 18.5},
-            {"id": "act_5", "action_name": "Oxygen Enrichment on Ladle Preheater", "cost": 110000, "co2_saved_tons_per_year": 76.0},
-            {"id": "act_6", "action_name": "Pneumatic Air Leak Remediation", "cost": 15000, "co2_saved_tons_per_year": 12.0}
-        ]
+        raise ValueError("No reduction actions found. Add your organization’s projects before running optimization.")
 
     prob = LpProblem("Carbon_Budget_Allocation", LpMaximize)
     x = {str(a["id"]): LpVariable(name=str(a["id"]), cat="Binary") for a in actions}
@@ -58,4 +50,4 @@ def solve_budget_allocation(budget=400000):
     return selected
 
 if __name__ == "__main__":
-    solve_budget_allocation(400000)
+    raise SystemExit("Provide a budget and organization-specific reduction actions through the application.")
