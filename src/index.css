@@ -10,6 +10,27 @@
   }
 }
 
+@layer components {
+  .input {
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid #26292F;
+    border-radius: 0.75rem;
+    background: #1F2228;
+    color: #F5F6F7;
+    font-size: 0.875rem;
+  }
+
+  .input:focus {
+    outline: none;
+    border-color: rgba(52, 211, 153, 0.7);
+    box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.12);
+  }
+
+  .input::placeholder { color: #6B7280; }
+}
+
 .hero-background {
   position: absolute;
   inset: 0;
