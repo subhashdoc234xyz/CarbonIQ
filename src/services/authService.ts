@@ -24,6 +24,9 @@ export const toUserProfile = (user: { id: string; email?: string; user_metadata?
 
 export async function signInWithGoogle() {
   if (!supabase) throw new Error('Google sign-in is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY, then enable Google in Supabase Authentication.');
-  const { error } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin } });
+  // Render uses its public origin; local development retains localhost. This
+  // address must also be added to Supabase's Redirect URLs allowlist.
+  const redirectTo = import.meta.env.VITE_APP_URL || window.location.origin;
+  const { error } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo } });
   if (error) throw error;
 }
