@@ -5,8 +5,6 @@ import {
   ReceiptText,
   Cpu,
   FileBarChart,
-  Sparkles,
-  Database,
 } from 'lucide-react';
 
 interface BottomNavProps {
@@ -18,9 +16,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentView, onNavigate })
   const tabs: { id: ScreenView; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
     { id: 'dashboard', label: 'Overview', icon: LayoutDashboard },
     { id: 'activity-log', label: 'Log', icon: ReceiptText },
-    { id: 'budget-optimizer', label: 'PuLP', icon: Cpu },
-    { id: 'steel-ml', label: 'Steel ML', icon: Sparkles },
-    { id: 'open-india-factors', label: 'Factors', icon: Database },
+    { id: 'budget-optimizer', label: 'Optimizer', icon: Cpu },
     { id: 'reports', label: 'Audit', icon: FileBarChart },
   ];
 

@@ -15,10 +15,7 @@ import { DashboardView } from './components/DashboardView';
 import { ActivityLogView } from './components/ActivityLogView';
 import { BudgetOptimizerView } from './components/BudgetOptimizerView';
 import { ReportsView } from './components/ReportsView';
-import { SteelIndustryMLView } from './components/SteelIndustryMLView';
-import { OpenIndiaFactorsView } from './components/OpenIndiaFactorsView';
-import { OpenIndiaEmissionFactor } from './data/openIndiaFactors';
-import { Sparkles, Layers } from 'lucide-react';
+import { Layers } from 'lucide-react';
 
 export default function App() {
   const [currentView, setCurrentView] = useState<ScreenView>('landing');
@@ -43,38 +40,13 @@ export default function App() {
     setLogs((prev) => prev.filter((l) => l.id !== id));
   };
 
-  const handleSelectFactorForLog = (factor: OpenIndiaEmissionFactor) => {
-    // Automatically create a sample log with this verified factor
-    const sampleQty = factor.unit.includes('kWh') ? 1000 : factor.unit.includes('L') ? 500 : 10;
-    const calcEmissions = Math.round(sampleQty * factor.value * 100) / 100;
-
-    const newEntry: ActivityLogEntry = {
-      id: `act_open_india_${Date.now()}`,
-      userId: user ? user.id : 'usr_enterprise_001',
-      sourceType: factor.factor_name.length > 30 ? factor.factor_name.slice(0, 30) + '...' : factor.factor_name,
-      activityValue: sampleQty,
-      unit: factor.unit.split('/')[1] || factor.unit,
-      factorValue: factor.value,
-      calculatedEmissionsKg: calcEmissions,
-      loggedAt: 'Today',
-      scope: (factor.scope.includes('Scope 1') ? 'Scope 1' : factor.scope.includes('Scope 3') ? 'Scope 3' : 'Scope 2') as any,
-      icon: factor.sector.toLowerCase().includes('electricity') ? 'zap' : 'flame',
-      notes: `Factor source: ${factor.source_document}. Reference: ${factor.reference_year || 'FY 2024-25'}`,
-    };
-
-    setLogs((prev) => [newEntry, ...prev]);
-    setCurrentView('activity-log');
-  };
-
-  // Screen Quick Switcher Tabs (For easy inspection of all specified prompt modules)
+  // Screen navigation
   const screensList: { id: ScreenView; label: string; tag: string }[] = [
     { id: 'landing', label: 'Screen 0: Landing', tag: 'Public' },
     { id: 'signin', label: 'Screen 0.5: Sign In', tag: 'Auth' },
     { id: 'dashboard', label: 'Screen 1: Dashboard', tag: 'Overview' },
     { id: 'activity-log', label: 'Screen 2: Activity Log', tag: 'Data Entry' },
     { id: 'budget-optimizer', label: 'Screen 3: Optimizer', tag: 'PuLP LP' },
-    { id: 'steel-ml', label: '6.1 Kaggle Steel ML', tag: 'csafrit2' },
-    { id: 'open-india-factors', label: '6.2 Open India Factors', tag: '116 CEA' },
     { id: 'reports', label: 'Screen 4: Reports', tag: 'Audit' },
   ];
 
@@ -180,14 +152,6 @@ export default function App() {
               )}
 
               {currentView === 'budget-optimizer' && <BudgetOptimizerView />}
-
-              {currentView === 'steel-ml' && (
-                <SteelIndustryMLView onLogToLedger={handleAddLog} />
-              )}
-
-              {currentView === 'open-india-factors' && (
-                <OpenIndiaFactorsView onSelectFactorForLog={handleSelectFactorForLog} />
-              )}
 
               {currentView === 'reports' && (
                 <ReportsView logs={logs} user={user || DEFAULT_USER} />

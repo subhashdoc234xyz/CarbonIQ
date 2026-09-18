@@ -27,7 +27,7 @@ export const SignInModal: React.FC<SignInModalProps> = ({ onSuccess, onBack }) =
 
   const handleGuestAccess = () => {
     setIsLoading(true);
-    setStatusMessage('Opening the CarbonIQ demo workspace...');
+    setStatusMessage('Opening an empty CarbonIQ workspace...');
 
     setTimeout(() => {
       onSuccess(GUEST_USER);
@@ -115,7 +115,7 @@ export const SignInModal: React.FC<SignInModalProps> = ({ onSuccess, onBack }) =
             <span>Continue as Guest</span>
           </button>
           <p className="text-[11px] text-[#9CA3AF] text-center mt-2">
-            Explore the demo workspace without creating an account.
+            Start with an empty workspace without creating an account.
           </p>
 
           {/* Status micro-interaction banner */}

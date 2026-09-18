@@ -25,11 +25,7 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
       case 'activity-log':
         return 'Activity Log';
       case 'budget-optimizer':
-        return 'Budget Optimizer (PuLP Engine)';
-      case 'steel-ml':
-        return 'Steel Plant ML Predictor (Kaggle)';
-      case 'open-india-factors':
-        return 'Open India Emission Factors Database';
+        return 'Budget Optimizer';
       case 'reports':
         return 'Reports & Audit';
       default:

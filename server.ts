@@ -86,48 +86,7 @@ Provide a concise, 3-bullet executive briefing:
     }
   });
 
-  // 2. Groq Steel Operations & Telemetry Analysis
-  app.post("/api/groq/steel-analysis", async (req, res) => {
-    try {
-      const { usageKwh, lagReactKvarh, leadReactKvarh, lagPowerFactor, loadType, predictedCo2 } = req.body;
-      const client = getGroq();
-
-      const prompt = `You are CarbonIQ's Steel Plant Energy & Load Shifting AI Assistant powered by Groq.
-Telemetry received:
-- Active Usage: ${usageKwh} kWh
-- Lagging Reactive Power: ${lagReactKvarh} kVarh
-- Leading Reactive Power: ${leadReactKvarh} kVarh
-- Lagging Power Factor: ${lagPowerFactor}
-- Shift Load Type: ${loadType}
-- ML Predicted Emission: ${predictedCo2} tCO2
-
-Provide:
-1. Root cause assessment of inductive/reactive penalty risk.
-2. Immediate load shifting advice (e.g. rescheduling arc furnace or rolling mill to off-peak/light load).
-3. 2 actionable operational adjustments to cut electricity emissions.`;
-
-      const completion = await client.chat.completions.create({
-        model: "llama-3.3-70b-versatile",
-        messages: [
-          { role: "system", content: "You are an energy auditor specializing in electric arc furnaces, rolling mills, and power factor optimization in heavy steel manufacturing." },
-          { role: "user", content: prompt }
-        ],
-        temperature: 0.2,
-        max_tokens: 500,
-      });
-
-      const reply = completion.choices[0]?.message?.content || "No advice generated.";
-      res.json({ success: true, advice: reply, model: "llama-3.3-70b-versatile" });
-    } catch (err: any) {
-      console.error("Groq steel analysis error:", err?.message);
-      res.status(err?.message?.includes("GROQ_API_KEY") ? 401 : 500).json({
-        success: false,
-        error: err?.message || "Failed to call Groq API",
-      });
-    }
-  });
-
-  // 3. Groq ESG Audit Commentary
+  // 2. Groq ESG Audit Commentary
   app.post("/api/groq/audit-summary", async (req, res) => {
     try {
       const { facility, scope1Tons, scope2Tons, scope3Tons, totalTons, logCount } = req.body;

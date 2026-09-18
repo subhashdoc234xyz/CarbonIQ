@@ -4,9 +4,7 @@ export type ScreenView =
   | 'dashboard' 
   | 'activity-log' 
   | 'budget-optimizer' 
-  | 'reports'
-  | 'steel-ml'
-  | 'open-india-factors';
+  | 'reports';
 
 export interface UserProfile {
   id: string;

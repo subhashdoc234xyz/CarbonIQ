@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, ShieldCheck, Activity, Cpu, BarChart3, CheckCircle2, Sliders, Wallet, Sparkles } from 'lucide-react';
+import { ArrowRight, ShieldCheck, Activity, Cpu, BarChart3, CheckCircle2 } from 'lucide-react';
 import { CarbonIQLogo } from './CarbonIQLogo';
 
 interface LandingPageProps {
@@ -76,31 +76,31 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           </button>
         </div>
 
-        {/* Live Telemetry Key Metrics (2-column grid matching Stitch) */}
+        {/* Data-free onboarding status */}
         <div className="w-full grid grid-cols-2 gap-3 mt-10 max-w-lg">
           <div className="bg-[#16181C] border border-[#26292F] p-4 rounded-xl text-left flex flex-col justify-between shadow-sm">
             <div className="flex items-center gap-2 text-[#9CA3AF] text-xs">
-              <Sliders className="w-3.5 h-3.5 text-[#34D399]" />
-              <span className="font-medium">Factor Precision</span>
+              <Activity className="w-3.5 h-3.5 text-[#34D399]" />
+              <span className="font-medium">Activity data</span>
             </div>
             <div className="text-2xl sm:text-3xl font-bold text-[#F5F6F7] mt-1.5 tracking-tight font-mono">
-              99.4<span className="text-[#34D399] text-lg">%</span>
+              0 <span className="text-[#34D399] text-lg">records</span>
             </div>
             <div className="mt-2 inline-flex items-center self-start gap-1 bg-[#26292F]/60 px-2 py-0.5 rounded-full text-[11px] text-[#34D399] font-medium font-mono">
-              +0.8% delta
+              Ready to connect
             </div>
           </div>
 
           <div className="bg-[#16181C] border border-[#26292F] p-4 rounded-xl text-left flex flex-col justify-between shadow-sm">
             <div className="flex items-center gap-2 text-[#9CA3AF] text-xs">
-              <Wallet className="w-3.5 h-3.5 text-[#34D399]" />
-              <span className="font-medium">Budget Optimized</span>
+              <Cpu className="w-3.5 h-3.5 text-[#34D399]" />
+              <span className="font-medium">Reduction projects</span>
             </div>
             <div className="text-2xl sm:text-3xl font-bold text-[#F5F6F7] mt-1.5 tracking-tight font-mono">
-              ₹4.2<span className="text-[#9CA3AF] text-lg">M</span>
+              0 <span className="text-[#9CA3AF] text-lg">projects</span>
             </div>
             <div className="mt-2 inline-flex items-center self-start gap-1 bg-[#26292F]/60 px-2 py-0.5 rounded-full text-[11px] text-[#9CA3AF] font-medium font-mono">
-              Scope 1–3
+              Add your own data
             </div>
           </div>
         </div>
@@ -146,10 +146,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 <h3 className="text-sm sm:text-base font-semibold text-[#F5F6F7]">
                   AI Budget Optimizer
                 </h3>
-                <Sparkles className="w-3.5 h-3.5 text-[#F59E0B]" />
               </div>
               <p className="text-xs sm:text-sm text-[#9CA3AF] mt-1 leading-relaxed">
-                PuLP linear programming allocation for maximum CO2 reduction within capital limits.
+                Prioritize the reduction projects and financial assumptions you add to your workspace.
               </p>
             </div>
           </div>

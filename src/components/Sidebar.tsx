@@ -9,8 +9,6 @@ import {
   LogOut,
   ShieldCheck,
   Building2,
-  Database,
-  Sparkles,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -29,9 +27,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const navItems: { id: ScreenView; label: string; icon: React.ComponentType<{ className?: string }>; badge?: string }[] = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'activity-log', label: 'Activity Log', icon: ClipboardList },
-    { id: 'budget-optimizer', label: 'Budget Optimizer', icon: Cpu, badge: 'PuLP' },
-    { id: 'steel-ml', label: 'Steel ML Predictor', icon: Sparkles, badge: 'Kaggle' },
-    { id: 'open-india-factors', label: 'Open India Factors', icon: Database, badge: 'v1.2' },
+    { id: 'budget-optimizer', label: 'Budget Optimizer', icon: Cpu },
     { id: 'reports', label: 'Reports & Audit', icon: FileBarChart },
   ];
 
