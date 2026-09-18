@@ -57,11 +57,11 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
 
         {/* Right action group */}
         <div className="flex items-center gap-3">
-          {/* Groq Engine Badge */}
+          {/* Product-level AI status badge */}
           <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#16181C] border border-[#26292F] text-xs font-mono">
             <span className="w-1.5 h-1.5 rounded-full bg-[#34D399]" />
-            <span className="text-[#9CA3AF]">AI:</span>
-            <span className="text-[#34D399] font-medium">Groq (GPT-OSS)</span>
+            <span className="text-[#9CA3AF]">AI</span>
+            <span className="text-[#34D399] font-medium">Insights</span>
           </div>
 
           {/* Status Indicator */}
