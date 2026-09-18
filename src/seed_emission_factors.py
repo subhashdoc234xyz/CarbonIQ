@@ -5,7 +5,15 @@ Keep a local JSON copy as an offline fallback for demo day.
 """
 import os
 import sys
+import json
 import pandas as pd
+
+
+def load_factor_records(path):
+    """Read the repository's top-level JSON object and return its factor rows."""
+    with open(path, "r", encoding="utf-8") as source:
+        payload = json.load(source)
+    return payload["emission_factors"]
 
 def seed_emission_factors():
     supabase_url = os.environ.get("SUPABASE_URL")
@@ -16,8 +24,7 @@ def seed_emission_factors():
         print("Using local bundled fallback: src/data/open_india_emission_factors.json")
         local_path = os.path.join(os.path.dirname(__file__), "data", "open_india_emission_factors.json")
         if os.path.exists(local_path):
-            df = pd.read_json(local_path)
-            factors = df["emission_factors"].to_dict(orient="records")
+            factors = load_factor_records(local_path)
             print(f"Loaded {len(factors)} verified Open India emission factors from local JSON cache.")
         return
 
@@ -36,8 +43,7 @@ def seed_emission_factors():
     except Exception as e:
         print(f"Error fetching remote JSON, trying local fallback: {e}")
         local_path = os.path.join(os.path.dirname(__file__), "data", "open_india_emission_factors.json")
-        response = pd.read_json(local_path)
-        factors = response["emission_factors"].to_dict(orient="records")
+        factors = load_factor_records(local_path)
 
     print(f"Seeding {len(factors)} factors into Supabase table 'emission_factors'...")
 
