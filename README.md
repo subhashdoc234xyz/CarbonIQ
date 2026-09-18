@@ -18,7 +18,7 @@
 
 <br />
 
-<img src="./public/assets/banner.png" alt="CarbonIQ Overview Dashboard" width="100%" style="border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.5);" />
+<img src="./public/assets/hero_abstract.png" alt="CarbonIQ Decarbonization & Ecological Intelligence Concept" width="100%" style="border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.5);" />
 
 <br />
 
