@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ScreenView, UserProfile, ActivityLogEntry } from './types';
 import { DEFAULT_USER, INITIAL_LOGS } from './data/initialData';
 import { HeaderNav } from './components/HeaderNav';
@@ -16,11 +16,27 @@ import { ActivityLogView } from './components/ActivityLogView';
 import { BudgetOptimizerView } from './components/BudgetOptimizerView';
 import { ReportsView } from './components/ReportsView';
 import { Layers } from 'lucide-react';
+import { supabase, toUserProfile } from './services/authService';
 
 export default function App() {
   const [currentView, setCurrentView] = useState<ScreenView>('landing');
   const [user, setUser] = useState<UserProfile | null>(null);
   const [logs, setLogs] = useState<ActivityLogEntry[]>(INITIAL_LOGS);
+
+  useEffect(() => {
+    if (!supabase) return;
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session?.user) {
+        setUser(toUserProfile(data.session.user));
+        setCurrentView('dashboard');
+      }
+    });
+    const { data: subscription } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ? toUserProfile(session.user) : null);
+      if (session?.user) setCurrentView('dashboard');
+    });
+    return () => subscription.subscription.unsubscribe();
+  }, []);
 
   const handleSignInSuccess = (loggedInUser: UserProfile) => {
     setUser(loggedInUser);
@@ -28,6 +44,7 @@ export default function App() {
   };
 
   const handleSignOut = () => {
+    supabase?.auth.signOut();
     setUser(null);
     setCurrentView('landing');
   };
@@ -70,10 +87,7 @@ export default function App() {
               <button
                 key={s.id}
                 onClick={() => {
-                  if (s.id !== 'landing' && s.id !== 'signin' && !user) {
-                    setUser(DEFAULT_USER);
-                  }
-                  setCurrentView(s.id);
+                  setCurrentView(s.id !== 'landing' && s.id !== 'signin' && !user ? 'signin' : s.id);
                 }}
                 className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-all shrink-0 flex items-center gap-1.5 cursor-pointer ${
                   isActive

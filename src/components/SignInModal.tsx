@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { ShieldCheck, Lock, Activity, ArrowLeft, UserRound } from 'lucide-react';
 import { CarbonIQLogo } from './CarbonIQLogo';
 import { UserProfile } from '../types';
-import { DEFAULT_USER, GUEST_USER } from '../data/initialData';
+import { GUEST_USER } from '../data/initialData';
+import { isAuthConfigured, signInWithGoogle } from '../services/authService';
 
 interface SignInModalProps {
   onSuccess: (user: UserProfile) => void;
@@ -13,16 +14,15 @@ export const SignInModal: React.FC<SignInModalProps> = ({ onSuccess, onBack }) =
   const [isLoading, setIsLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
-  const handleGoogleSignIn = () => {
+  const handleGoogleSignIn = async () => {
     setIsLoading(true);
-    setStatusMessage('Initializing Google SSO handshake...');
-
-    setTimeout(() => {
-      setStatusMessage('Authenticating with Row-Level Security...');
-      setTimeout(() => {
-        onSuccess(DEFAULT_USER);
-      }, 700);
-    }, 600);
+    setStatusMessage('Redirecting to Google…');
+    try {
+      await signInWithGoogle();
+    } catch (error) {
+      setIsLoading(false);
+      setStatusMessage(error instanceof Error ? error.message : 'Unable to start Google sign-in.');
+    }
   };
 
   const handleGuestAccess = () => {
@@ -99,6 +99,7 @@ export const SignInModal: React.FC<SignInModalProps> = ({ onSuccess, onBack }) =
             </svg>
             <span>{isLoading ? 'Connecting...' : 'Continue with Google'}</span>
           </button>
+          {!isAuthConfigured && <p className="w-full mt-2 text-[11px] text-[#F59E0B] text-center">Google sign-in needs Supabase credentials and a Google provider configuration.</p>}
 
           <div className="w-full flex items-center gap-3 my-4" aria-hidden="true">
             <div className="h-px flex-1 bg-[#26292F]" />
