@@ -17,7 +17,7 @@ export async function checkGroqStatus(): Promise<GroqStatus> {
   } catch {
     return {
       configured: false,
-      model: 'llama-3.3-70b-versatile',
+      model: 'llama3-70b-8192',
       provider: 'Groq Cloud',
     };
   }

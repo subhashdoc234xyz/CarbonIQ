@@ -32,7 +32,7 @@ async function startServer() {
   app.get("/api/health", (req, res) => {
     res.json({
       status: "ok",
-      aiProvider: "Groq (Llama 3.3 70B)",
+      aiProvider: "Groq (Llama 3 70B)",
       hasGroqApiKey: !!process.env.GROQ_API_KEY,
       timestamp: new Date().toISOString(),
     });
@@ -42,7 +42,7 @@ async function startServer() {
   app.get("/api/groq/status", (req, res) => {
     res.json({
       configured: !!process.env.GROQ_API_KEY,
-      model: "llama-3.3-70b-versatile",
+      model: "llama3-70b-8192",
       provider: "Groq Cloud",
     });
   });
@@ -66,7 +66,7 @@ Provide a concise, 3-bullet executive briefing:
 3. Recommendation for un-funded actions in the next fiscal budget`;
 
       const completion = await client.chat.completions.create({
-        model: "llama-3.3-70b-versatile",
+        model: "llama3-70b-8192",
         messages: [
           { role: "system", content: "You are an expert industrial carbon mitigation engineer and LP optimization analyst." },
           { role: "user", content: prompt }
@@ -76,7 +76,7 @@ Provide a concise, 3-bullet executive briefing:
       });
 
       const reply = completion.choices[0]?.message?.content || "No insights generated.";
-      res.json({ success: true, insights: reply, model: "llama-3.3-70b-versatile" });
+      res.json({ success: true, insights: reply, model: "llama3-70b-8192" });
     } catch (err: any) {
       console.error("Groq optimize error:", err?.message);
       res.status(err?.message?.includes("GROQ_API_KEY") ? 401 : 500).json({
@@ -104,7 +104,7 @@ Standard: GHG Protocol Corporate Standard & BRSR Core (SEBI India)
 Provide a 2-paragraph formal auditor statement assessing verification readiness, hotspot attribution, and regulatory alignment.`;
 
       const completion = await client.chat.completions.create({
-        model: "llama-3.3-70b-versatile",
+        model: "llama3-70b-8192",
         messages: [
           { role: "system", content: "You are an ISO 14064 certified GHG inventory auditor." },
           { role: "user", content: prompt }
@@ -114,7 +114,7 @@ Provide a 2-paragraph formal auditor statement assessing verification readiness,
       });
 
       const statement = completion.choices[0]?.message?.content || "Audit statement generated.";
-      res.json({ success: true, statement, model: "llama-3.3-70b-versatile" });
+      res.json({ success: true, statement, model: "llama3-70b-8192" });
     } catch (err: any) {
       console.error("Groq audit error:", err?.message);
       res.status(err?.message?.includes("GROQ_API_KEY") ? 401 : 500).json({
@@ -136,7 +136,7 @@ Optimized portfolio: ₹${totalCost}, ${annualSavingsTons} tCO2e/year, projects:
 Evidence-informed recommendations: ${JSON.stringify(suggestions)}.
 Give: baseline and projected reduction, lowest-cost implementation order, and one audit data-quality action. Keep it under 180 words and make clear this is a forecast.`;
       const completion = await client.chat.completions.create({
-        model: "llama-3.3-70b-versatile",
+        model: "llama3-70b-8192",
         messages: [{ role: "system", content: "You are a practical industrial decarbonization analyst. Be precise and transparent about uncertainty." }, { role: "user", content: prompt }],
         temperature: 0.2, max_tokens: 450,
       });
